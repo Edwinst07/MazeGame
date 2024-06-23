@@ -5,6 +5,10 @@ let fps = 50;
 let widthF = 50;
 let heightF = 50;
 
+//Camera
+let widthScene =25;
+let heightScene =20;
+
 let tilemap;
 
 let cesped = "#044f14";
@@ -15,6 +19,32 @@ let llave = "#c6bc00";
 let prota;
 let imgAntorcha = [];
 let enemigo = [];
+
+let camera;
+
+//Sound and Music
+let music;
+let sound1, sound2, sound3;
+
+sound1 = new Howl({
+  src: ['Sound/fuego.wav'],
+  loop: false
+});
+
+sound2 = new Howl({
+  src: ['Sound/llave.wav'],
+  loop: false
+});
+
+sound3 = new Howl({
+  src: ['Sound/puerta.wav'],
+  loop: false
+});
+
+music = new Howl({
+  src: ['Music/fortaleza.mp3'],
+  loop: true
+});
 
 let scene = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -28,6 +58,49 @@ let scene = [
   [0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 1, 2, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
+/*
+let objCamera = function(x, y, sizeX, sizeY, posX, posY){
+
+  this.x =x;
+  this.y = y;
+  this.sizeX = sizeX;
+  this.sizeY = sizeY;
+  this.posX = posX;
+  this.posY = posY;
+
+
+  this.paint = function(){
+    for (c = this.y; c < (this.sizeY + this.y); c++) {
+      for (f = this.x; f < (this.sizeX + this.x); f++) {
+  
+        let tile = scene[c][f];
+        ctx.drawImage(tilemap, tile*32, 0, 32, 32, widthF*(f-this.x + this.posX), heightF*(c-this.y + this.posY), widthF, heightF);
+      }
+    }
+  }
+
+  this.above = function(){
+    if(this.y > 0)
+      this.y--;
+  }
+
+  this.below = function(){
+    if(this.y < heightScene - this.sizeY)
+      this.y++;
+  }
+
+  this.left = function(){
+    if(this.x > 0)
+      this.x--;
+  }
+
+  this.right = function(){
+    if(this.x < widthScene - this.sizeX)
+      this.x++;
+  }
+
+}
+  */
 
 function paintScene() {
   //var color;
@@ -63,7 +136,7 @@ let antorcha = function(x, y){
   this.fotograma = 0;
   this.contador = 0;
   this.retardo = 10;
-
+  
   this.cambiarFotogramas = function(){
     if(this.fotograma < 3){
       this.fotograma++;
@@ -169,6 +242,7 @@ let player = function () {
   this.colisionEnemigo = function(x, y){
     if(this.x == x && this.y == y){
       this.partidaPerdida();
+      sound1.play();
     }
   }
 
@@ -193,7 +267,6 @@ let player = function () {
     if (this.margen(this.x, this.y + 1) == false){ 
       this.y++;
       this.obtenerObjecto();
-  
     }
   };
 
@@ -217,6 +290,7 @@ let player = function () {
     this.x = 1;
     this.y = 1;
     console.log("Ganaste!!");
+    sound3.play();
   }
 
   this.partidaPerdida = function(){
@@ -234,6 +308,7 @@ let player = function () {
       this.llave = true;
       scene[this.y][this.x] = 2;
       //console.log("Tienes la llave!!!");
+      sound2.play();
     }
 
     //reiniciar !!
@@ -249,6 +324,8 @@ function inicializar() {
   ctx = canvas.getContext("2d");
 
   prota = new player();
+
+  music.play();
 
   tilemap = new Image();
   tilemap.src = "image/tilemap.png";
@@ -301,6 +378,7 @@ function borrarCanvas() {
 function main() {
   borrarCanvas();
   paintScene();
+  //camera.paint();
   prota.paint();
   for(c = 0; c< imgAntorcha.length;c++)
     imgAntorcha[c].paint();
